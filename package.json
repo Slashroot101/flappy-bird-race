@@ -1,0 +1,27 @@
+{
+  "name": "flappy-bird-race",
+  "version": "1.0.0",
+  "description": "",
+  "main": "swagger.js",
+  "dependencies": {
+    "@guivic/fastify-socket.io": "^0.1.1",
+    "fastify": "^2.6.0",
+    "fastify-static": "^2.5.0",
+    "fastify-swagger": "^2.4.0",
+    "socket.io": "^2.2.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Slashroot101/flappy-bird-race.git"
+  },
+  "author": "slashroot101",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Slashroot101/flappy-bird-race/issues"
+  },
+  "homepage": "https://github.com/Slashroot101/flappy-bird-race#readme"
+}

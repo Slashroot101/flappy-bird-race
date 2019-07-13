@@ -1,91 +1,68 @@
-const gameSchemaBeforeSave = {
-  players: {
-    type: 'array',
-    description: 'Array of players that are currently enrolled in the game',
-    items: {
-      type: 'object',
-      properties: {
-        name: {
-          type: 'string',
-          required: true,
-        },
-        socketClientID: {
-          type: 'string',
-          required: true,
-        }
-      }
-    }
+const GameModel = require('./GameModel');
+const { boomify } = require('boomify');
+
+exports.createGame = async (req, reply) => {
+  try {
+    const game = await new GameModel(req.body).save();
+    return {game};
+  } catch (err){
+    throw boomify(err);
   }
 };
 
-const gameSchemaAfterSave = {
-  ...gameSchemaBeforeSave,
-  createdOn: {
-    type: 'string',
-    description: 'The date that the game was started on'
-  },
-  _id: {
-    type: 'string',
-    description: 'ID of the game'
-  },
-  __v: {
-    type: 'number'
+exports.updateGame = async (req, reply) => {
+  try {
+    let query = {};
+
+    if(req.body.players){
+      query.$push.players = req.body.players;
+    }
+
+    if('isComplete' in req.body){
+      query.isComplete = req.body.isComplete;
+    }
+
+    const game = await GameModel
+      .findByIdAndUpdate(
+        req.params.id,
+        query,
+        { new:true },
+      ).exec();
+
+    return {game};
+  } catch (err) {
+    throw boomify(err);
   }
 };
 
-gameSchemaAfterSave.players.items.properties._id = {
-  type: 'string',
-  description: 'ID of the player in the game'
-};
+exports.getWithFilter = async (req, reply) => {
+  try {
+    let query = {};
 
-gameSchemaAfterSave.players.items.properties.__v = {
-  type: 'number'
-};
-
-exports.createGame = {
-  description: 'Create a game',
-  tags: ['Game'],
-  summary: 'Creates a new game with the given values',
-  body: gameSchemaBeforeSave,
-  exposeRoute: true,
-  response: {
-    200: {
-      description: 'Successfully created a new game',
-      type: 'object',
-      properties: {
-        type: 'object',
-        properties: gameSchemaAfterSave,
-      },
-    },
-  },
-};
-
-exports.updateGame = {
-  description: 'Updates a game with the given values',
-  tags: ['Game'],
-  summary: 'Updates a game with the given values with the given ID',
-  params: {
-    id: {
-      type: 'string',
-      required: true,
+    if(req.query.createdOnStart){
+      query.$gte = { createdOnStart: req.query.createdOnStart};
     }
-  },
-  body: {
-    players: {
-      type: 'array',
-      items: {
-        type: 'object',
-        properties: {
-          name: {
-            type: 'string',
-            description: 'The name of the player',
-          },
-          socketClientID: {
-            type: 'string',
-            description: 'The ID of the client in the socket pool',
-          },
-        }
-      }
+
+    if(req.query.createdOnEndDate){
+      query.$lte = { createdOnStart: req.query.createdOnStart};
     }
-  },
+
+    if('isComplete' in req.query){
+      query.isComplete = req.query.isComplete;
+    }
+
+    if(req.query.socketClientID){
+      query.socketClientID = req.query.socketClientID;
+    }
+
+    if(req.query.name){
+      query.name = req.query.name;
+    }
+
+    const games = await GameModel.find(query).limit(req.query.limit).skip(req.query.pageStart).exec();
+
+    return {games};
+  } catch (err) {
+    throw boomify(err);
+  }
 };

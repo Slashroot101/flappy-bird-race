@@ -15,6 +15,10 @@ const gameSchema = new mongoose.Schema({
       required: true,
     }
   }],
+  isComplete: {
+    type: Boolean,
+    required: true,
+  }
 });
 
 module.exports = mongoose.Model('Game', gameSchema);

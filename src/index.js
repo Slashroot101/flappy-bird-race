@@ -3,6 +3,8 @@ const fastify = require('fastify')({
 });
 const path = require('path');
 const swagger = require('../swagger');
+const mongoose = require('mongoose');
+const config = require('../config');
 
 const start = async () => {
   try {
@@ -17,7 +19,9 @@ const start = async () => {
       pingTimeout: 5000,
       cookie: false,
     });
-
+    await mongoose.connect(config.mongoConnectionString, {
+      useNewUrlParser: true,
+    });
     fastify.setNotFoundHandler((req, res) => {
       res.sendFile('index.html');
     });

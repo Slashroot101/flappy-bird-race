@@ -22,6 +22,7 @@ const start = async () => {
     await mongoose.connect(config.mongoConnectionString, {
       useNewUrlParser: true,
     });
+    fastify.register(require('./routes/Game'), {prefix: '/api/game'});
     fastify.setNotFoundHandler((req, res) => {
       res.sendFile('index.html');
     });
@@ -30,9 +31,7 @@ const start = async () => {
     fastify.log.info(`Server is listening on ${fastify.server.address().port}`);
     fastify.io.on('connection', (socket) => {
       socket.on('jump', (e)=>{
-        console.log(socket.id)
         fastify.log.info(e)
-        console.log(e)
       })
     })
   } catch (err) {

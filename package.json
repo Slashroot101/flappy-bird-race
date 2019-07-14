@@ -5,6 +5,7 @@
   "main": "swagger.js",
   "dependencies": {
     "@guivic/fastify-socket.io": "^0.1.1",
+    "boom": "^7.3.0",
     "fastify": "^2.6.0",
     "fastify-static": "^2.5.0",
     "fastify-swagger": "^2.4.0",

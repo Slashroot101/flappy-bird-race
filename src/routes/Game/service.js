@@ -1,8 +1,9 @@
 const GameModel = require('./GameModel');
-const { boomify } = require('boomify');
+const { boomify } = require('boom');
 
 exports.createGame = async (req, reply) => {
   try {
+    req.body.createdOn = new Date();
     const game = await new GameModel(req.body).save();
     return {game};
   } catch (err){
@@ -15,7 +16,7 @@ exports.updateGame = async (req, reply) => {
     let query = {};
 
     if(req.body.players){
-      query.$push.players = req.body.players;
+      query.$push = {players: req.body.players};
     }
 
     if('isComplete' in req.body){

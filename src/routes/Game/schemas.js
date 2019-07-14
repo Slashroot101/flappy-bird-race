@@ -6,12 +6,10 @@ const gameSchemaBeforeSave = {
       type: 'object',
       properties: {
         name: {
-          type: 'string',
-          required: true,
+          type: 'string'
         },
         socketClientID: {
-          type: 'string',
-          required: true,
+          type: 'string'
         }
       }
     }
@@ -73,7 +71,6 @@ exports.updateGame = {
   params: {
     id: {
       type: 'string',
-      required: true,
     }
   },
   body: {

@@ -4,10 +4,35 @@
         <meta charset="utf-8" />
         <title> Flappy Bird </title>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.dev.js" integrity="sha256-i2Orhi397HWPn93rsCUTW8HBoso65vY/VNTllm9Kuqo=" crossorigin="anonymous"></script>
-        <script type="text/javascript" src="/js/phaser.min.js"></script>
-        <script type="text/javascript" src="/js/main.js"></script>
+        <script
+                src="https://code.jquery.com/jquery-3.4.1.min.js"
+                integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+                crossorigin="anonymous"></script>
+        <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+        <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css">
+        <script type="text/javascript" src="/js/gamePicker.js"></script>
+        <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     </head>
 
     <body>
+        <div class="container">
+            <div class="row align-items-center justify-content-center">
+                <h1>Flappy Bird Lobbies</h1>
+                <div class="col-md-12">
+                    <table id="lobbies" class="display cell-border compact stripe text-center">
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Num. Players</th>
+                            <th>Created On</th>
+                            <th>Join</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </body>
 </html>

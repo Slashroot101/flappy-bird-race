@@ -26,6 +26,15 @@ const start = async () => {
     fastify.setNotFoundHandler((req, res) => {
       res.sendFile('index.html');
     });
+
+    fastify.get('/:id/game', (req, reply) => {
+      reply.sendFile('game.html');
+    });
+
+    fastify.get('/', (req, reply) => {
+      reply.sendFile('index.html');
+    });
+
     await fastify.listen(3000);
     fastify.swagger();
     fastify.log.info(`Server is listening on ${fastify.server.address().port}`);

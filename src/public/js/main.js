@@ -79,7 +79,10 @@ socketIO.on('connect', (physicalSocketConnection) => {
   game = new Phaser.Game(1000,1000, Phaser.CANVAS);
   game.state.add('main', mainState);
   game.state.start('main');
+  socketIO.emit('clientGameJoin', {gameID: location.pathname.split('/')[1]})
 });
+
+
 
 
 

@@ -5,6 +5,7 @@ const path = require('path');
 const swagger = require('../swagger');
 const mongoose = require('mongoose');
 const config = require('../config');
+const clients = [];
 
 const start = async () => {
   try {
@@ -39,10 +40,19 @@ const start = async () => {
     fastify.swagger();
     fastify.log.info(`Server is listening on ${fastify.server.address().port}`);
     fastify.io.on('connection', (socket) => {
+
       socket.on('jump', (e)=>{
         fastify.log.info(e)
-      })
-    })
+      });
+
+      socket.on('clientGameJoin', (e) => {
+        clients.push({
+         clientID: socket.id,
+         gameID: e.gameID,
+        });
+      });
+
+    });
   } catch (err) {
     fastify.log.error(err);
     process.exit(1);

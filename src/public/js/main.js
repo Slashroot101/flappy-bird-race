@@ -79,10 +79,15 @@ socketIO.on('connect', (physicalSocketConnection) => {
   game = new Phaser.Game(1000,1000, Phaser.CANVAS);
   game.state.add('main', mainState);
   game.state.start('main');
-  socketIO.emit('clientGameJoin', {gameID: location.pathname.split('/')[1]})
+  socketIO.emit('clientGameJoin', {gameID: location.pathname.split('/')[1], name: $.urlParam('name')});
 });
 
+$.urlParam = function (name) {
+  var results = new RegExp('[\?&]' + name + '=([^&#]*)')
+      .exec(window.location.search);
 
+  return (results !== null) ? results[1] || 0 : false;
+}
 
 
 

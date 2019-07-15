@@ -11,9 +11,10 @@ $(document).ready((e) => {
       `);
     });
     $('button').on('click', (e) => {
+      const playerName = prompt('What would you like your game name to be?');
       const gameID = $(e.target).parent().parent().attr('id');
       if(gameID){
-        location.href = `${location.protocol}//${location.hostname}:${location.port}/${gameID}/game`;
+        location.href = `${location.protocol}//${location.hostname}:${location.port}/${gameID}/game?name=${playerName}`;
       }
     });
     $('#lobbies').DataTable();

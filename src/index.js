@@ -4,8 +4,8 @@ const fastify = require('fastify')({
 const path = require('path');
 const swagger = require('../swagger');
 const mongoose = require('mongoose');
+const GameModel = require('./routes/Game/GameModel');
 const config = require('../config');
-const clients = [];
 
 const start = async () => {
   try {
@@ -45,13 +45,20 @@ const start = async () => {
         fastify.log.info(e)
       });
 
-      socket.on('clientGameJoin', (e) => {
+      socket.on('clientGameJoin', async (e) => {
+        await GameModel.findByIDAndUpdate(e.gameID, {
+          $push: {
+            players: {
+                socketClientID: socket.id,
+                name: e.name,
+              }
+          }
+        });
         clients.push({
          clientID: socket.id,
          gameID: e.gameID,
         });
       });
-
     });
   } catch (err) {
     fastify.log.error(err);

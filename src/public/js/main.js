@@ -6,21 +6,24 @@ let mainState = {
     game.cache.addSound('jump', '/sound/jump.wav', game.load.audio('jump', '/sound/jump.wav'));
   },
   create: function () {
+    const boundStartGame = startGame.bind(this);
+    socketIO.on('clientGameStart', boundStartGame);
+    socketIO.on('clientGameJoin', (e) => {
+      if(e.percentToFull >= 1){
+        boundStartGame();
+      }
+      if(e.socket === socketIO.id){ return; };
+      this.bird = game.add.sprite(100, 245, 'bird');
+    });
+
     this.jumpSound = game.add.audio('jump');
     game.stage.backgroundColor = '#71c5cf';
     game.physics.startSystem(Phaser.Physics.ARCADE);
     this.bird = game.add.sprite(100, 245, 'bird');
     this.bird.scale.set(.85, .85);
-    game.physics.arcade.enable(this.bird);
-    this.bird.body.gravity.y = 1000;
     let spaceKey = game.input.keyboard.addKey(
       Phaser.Keyboard.SPACEBAR);
     this.score = 0;
-    this.labelScore = game.add.text(20, 20, "0",
-      { font: "30px Arial", fill: "#ffffff" });
-    spaceKey.onDown.add(this.jump, this);
-    game.input.onDown.add(this.jump, this);
-    this.timer = game.time.events.loop(2000, this.addRowOfPipes, this);
   },
   update: function() {
     if (this.bird.angle < 20)
@@ -56,7 +59,6 @@ let mainState = {
   addRowOfPipes: function() {
     let hole = Math.floor(Math.random() * 15 + 1);
     for (let i = 0; i < 16; i++) {
-      console.log(i)
       if (i !== hole && i !== hole + 1)
         this.addOnePipe(400, i * 60 + 10);
     }
@@ -76,10 +78,14 @@ let mainState = {
 let game;
 const socketIO = io();
 socketIO.on('connect', (physicalSocketConnection) => {
+  socketIO.emit('join', {game: location.pathname.split('/')[1]});
+  if($('canvas').length || $.urlParam('isLoadedOnce') !== false){
+    window.location.href='/';
+  }
   game = new Phaser.Game(1000,1000, Phaser.CANVAS);
+  socketIO.emit('clientGameJoin', {gameID: location.pathname.split('/')[1], name: $.urlParam('name')});
   game.state.add('main', mainState);
   game.state.start('main');
-  socketIO.emit('clientGameJoin', {gameID: location.pathname.split('/')[1], name: $.urlParam('name')});
 });
 
 $.urlParam = function (name) {
@@ -89,7 +95,14 @@ $.urlParam = function (name) {
   return (results !== null) ? results[1] || 0 : false;
 }
 
-
+function startGame(){
+  game.physics.arcade.enable(this.bird);
+  this.bird.body.gravity.y = 1000;
+  this.labelScore = game.add.text(20, 20, "0",
+    { font: "30px Arial", fill: "#ffffff" });
+  game.input.onDown.add(this.jump, this);
+  this.timer = game.time.events.loop(2000, this.addRowOfPipes, this);
+}
 
 
 

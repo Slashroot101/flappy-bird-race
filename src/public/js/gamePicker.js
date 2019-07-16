@@ -14,7 +14,7 @@ $(document).ready((e) => {
       const playerName = prompt('What would you like your game name to be?');
       const gameID = $(e.target).parent().parent().attr('id');
       if(gameID){
-        location.href = `${location.protocol}//${location.hostname}:${location.port}/${gameID}/game?name=${playerName}`;
+        location.href = `${location.protocol}//${location.hostname}:${location.port}/${gameID}/game?name=${encodeURI(playerName)}`;
       }
     });
     $('#lobbies').DataTable();

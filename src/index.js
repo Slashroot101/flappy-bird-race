@@ -6,7 +6,7 @@ const swagger = require('../swagger');
 const mongoose = require('mongoose');
 const GameModel = require('./routes/Game/GameModel');
 const config = require('../config');
-
+const MAX_NUM_PLAYERS = 2;
 const start = async () => {
   try {
     fastify.register(require('fastify-swagger'), swagger.options);
@@ -40,24 +40,27 @@ const start = async () => {
     fastify.swagger();
     fastify.log.info(`Server is listening on ${fastify.server.address().port}`);
     fastify.io.on('connection', (socket) => {
+      socket.on('join', e => {
+        socket.join(e.game);
+      });
 
       socket.on('jump', (e)=>{
         fastify.log.info(e)
       });
 
       socket.on('clientGameJoin', async (e) => {
-        await GameModel.findByIDAndUpdate(e.gameID, {
+        const game = await GameModel.findByIdAndUpdate(e.gameID, {
           $push: {
             players: {
-                socketClientID: socket.id,
-                name: e.name,
-              }
+              socketClientID: socket.id,
+              name: e.name,
+            }
           }
-        });
-        clients.push({
-         clientID: socket.id,
-         gameID: e.gameID,
-        });
+        }, {new: true}).exec();
+        fastify.io.in(game._id).emit('clientGameJoin', {game: game._id, socket: socket.id, percentToFull: game.players.length / MAX_NUM_PLAYERS});
+        if(game.players.length >= MAX_NUM_PLAYERS){
+          fastify.io.in(game._id).emit('clientGameStart');
+        }
       });
     });
   } catch (err) {

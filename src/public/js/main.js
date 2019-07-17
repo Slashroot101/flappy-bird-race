@@ -1,4 +1,6 @@
 let birds = [];
+let game;
+const socketIO = io();
 let mainState = {
   preload: function () {
     game.load.image('bird', '/img/bird.png');
@@ -83,8 +85,7 @@ let mainState = {
     }, this);
   },
 };
-let game;
-const socketIO = io();
+
 socketIO.on('connect', (physicalSocketConnection) => {
   socketIO.emit('join', {game: location.pathname.split('/')[1]});
   if($('canvas').length || $.urlParam('isLoadedOnce') !== false){
@@ -101,7 +102,7 @@ $.urlParam = function (name) {
       .exec(window.location.search);
 
   return (results !== null) ? results[1] || 0 : false;
-}
+};
 
 function startGame(){
   game.physics.arcade.enable(this.bird);

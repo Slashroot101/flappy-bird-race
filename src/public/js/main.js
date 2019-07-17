@@ -1,3 +1,4 @@
+let birds = [];
 let mainState = {
   preload: function () {
     game.load.image('bird', '/img/bird.png');
@@ -13,33 +14,40 @@ let mainState = {
         boundStartGame();
       }
       if(e.socket === socketIO.id){ return; };
-      this.bird = game.add.sprite(100, 245, 'bird');
+      let player;
+      player[e.socket] = game.add.sprite(100, 245, 'bird');
+      birds.push(player);
     });
 
     this.jumpSound = game.add.audio('jump');
     game.stage.backgroundColor = '#71c5cf';
     game.physics.startSystem(Phaser.Physics.ARCADE);
-    this.bird = game.add.sprite(100, 245, 'bird');
-    this.bird.scale.set(.85, .85);
-    let spaceKey = game.input.keyboard.addKey(
+    let me;
+    me[socketIO.id] = game.add.sprite(100, 245, 'bird');
+    me[socketIO.id].scale.set(.85, .85);
+    const spaceKey = game.input.keyboard.addKey(
       Phaser.Keyboard.SPACEBAR);
     this.score = 0;
   },
   update: function() {
-    if (this.bird.angle < 20)
-      this.bird.angle += 1;
-    // if (this.bird.y < 0 || this.bird.y > window.innerHeight *  window.devicePixelRatio)
-    //   this.restartGame();
-    // game.physics.arcade.overlap(
-    //   this.bird, this.pipes, this.hitPipe, null, this);
+    birds.forEach(bird => {
+      if (bird.angle < 20)
+        bird.angle += 1;
+
+      if (bird.y < 0 || bird.y > 1000)
+        this.restartGame();
+
+      game.physics.arcade.overlap(
+        bird, this.pipes, this.hitPipe, null, this);
+    });
   },
   jump: function() {
-    socketIO.emit('jump', 'e')
-    if (this.bird.alive == false)
+    socketIO.emit('jump', 'e');
+    if (birds[socketIO.id].alive == false)
       return;
     this.jumpSound.play();
-    this.bird.body.velocity.y = -400;
-    let animation = game.add.tween(this.bird);
+    birds[socketIO.id].body.velocity.y = -400;
+    let animation = game.add.tween(birds[socketIO.id]);
     animation.to({angle: -20}, 100);
     animation.start();
   },
@@ -66,9 +74,9 @@ let mainState = {
     this.labelScore.text = this.score;
   },
   hitPipe: function() {
-    if (this.bird.alive == false)
+    if (birds[socketIO.id].alive == false)
       return;
-    this.bird.alive = false;
+    birds[socketIO.id].alive = false;
     game.time.events.remove(this.timer);
     this.pipes.forEach(function(p){
       p.body.velocity.x = 0;
@@ -89,7 +97,7 @@ socketIO.on('connect', (physicalSocketConnection) => {
 });
 
 $.urlParam = function (name) {
-  var results = new RegExp('[\?&]' + name + '=([^&#]*)')
+  const results = new RegExp('[\?&]' + name + '=([^&#]*)')
       .exec(window.location.search);
 
   return (results !== null) ? results[1] || 0 : false;

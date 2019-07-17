@@ -36,7 +36,7 @@ const start = async () => {
       reply.sendFile('index.html');
     });
 
-    await fastify.listen(3000);
+    await fastify.listen(3000, '192.168.1.242');
     fastify.swagger();
     fastify.log.info(`Server is listening on ${fastify.server.address().port}`);
     fastify.io.on('connection', (socket) => {
@@ -45,7 +45,7 @@ const start = async () => {
       });
 
       socket.on('jump', (e)=>{
-        fastify.log.info(e)
+        fastify.io.in(e.gameID).emit('jump', {player: socket.id});
       });
 
       socket.on('clientGameJoin', async (e) => {

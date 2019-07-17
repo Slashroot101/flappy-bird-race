@@ -1,4 +1,4 @@
-let birds = [];
+let birds = {};
 let game;
 const socketIO = io();
 let mainState = {
@@ -16,55 +16,63 @@ let mainState = {
         boundStartGame();
       }
       if(e.socket === socketIO.id){ return; };
-      let player;
-      player[e.socket] = game.add.sprite(100, 245, 'bird');
-      birds.push(player);
+      birds[e.socket] = game.add.sprite(100, 245, 'bird');
     });
 
     this.jumpSound = game.add.audio('jump');
     game.stage.backgroundColor = '#71c5cf';
     game.physics.startSystem(Phaser.Physics.ARCADE);
-    let me;
-    me[socketIO.id] = game.add.sprite(100, 245, 'bird');
-    me[socketIO.id].scale.set(.85, .85);
+    birds[socketIO.id] = game.add.sprite(100, 245, 'bird');
     const spaceKey = game.input.keyboard.addKey(
       Phaser.Keyboard.SPACEBAR);
     this.score = 0;
   },
   update: function() {
-    birds.forEach(bird => {
-      if (bird.angle < 20)
-        bird.angle += 1;
+    for(let bird in birds){
+      if (birds[bird].angle < 20)
+        birds[bird].angle += 1;
 
-      if (bird.y < 0 || bird.y > 1000)
+      if (birds[bird].y < 0 || birds[bird].y > 1000)
         this.restartGame();
 
-      game.physics.arcade.overlap(
-        bird, this.pipes, this.hitPipe, null, this);
-    });
+      // game.physics.arcade.overlap(
+      //   birds[bird], this.pipes, this.hitPipe, null, this);
+    }
   },
   jump: function() {
-    socketIO.emit('jump', 'e');
     if (birds[socketIO.id].alive == false)
       return;
+    socketIO.emit('jump', {
+      player: socketIO.id,
+      gameID: location.pathname.split('/')[1],
+    });
     this.jumpSound.play();
+    console.log(birds[socketIO.id])
     birds[socketIO.id].body.velocity.y = -400;
     let animation = game.add.tween(birds[socketIO.id]);
     animation.to({angle: -20}, 100);
     animation.start();
+    socketIO.on('jump', (e) => {
+      console.log(e)
+      this.jumpSound.play();
+      birds[e.player].body.velocity.y = -400;
+      console.log(birds[e.player])
+      let animation = game.add.tween(birds[e.player]);
+      animation.to({angle: -20}, 100);
+      animation.start();
+    });
   },
   restartGame: function() {
-    lastHolePosition = undefined;
     game.state.start('main');
   },
   addOnePipe: function(x, y){
-    const pipe = game.add.sprite(x,y, 'pipe');
-    pipe.scale.setTo(window.devicePixelRatio, window.devicePixelRatio );
-    this.pipes.add(pipe);
-    game.physics.arcade.enable(pipe);
-    pipe.body.velocity.x = -200;
-    pipe.checkWorldBounds = true;
-    pipe.outOfBoundsKill = true;
+    // const pipe = game.add.sprite(x,y, 'pipe');
+    // pipe.scale.setTo(window.devicePixelRatio, window.devicePixelRatio );
+    // this.pipes.add(pipe);
+    // game.physics.arcade.enable(pipe);
+    // pipe.body.velocity.x = -200;
+    // pipe.checkWorldBounds = true;
+    // pipe.outOfBoundsKill = true;
   },
   addRowOfPipes: function() {
     let hole = Math.floor(Math.random() * 15 + 1);
@@ -105,8 +113,11 @@ $.urlParam = function (name) {
 };
 
 function startGame(){
-  game.physics.arcade.enable(this.bird);
-  this.bird.body.gravity.y = 1000;
+  for(bird in birds){
+    game.physics.arcade.enable(birds[bird]);
+    birds[bird].body.gravity.y = 1000;
+  }
+
   this.labelScore = game.add.text(20, 20, "0",
     { font: "30px Arial", fill: "#ffffff" });
   game.input.onDown.add(this.jump, this);

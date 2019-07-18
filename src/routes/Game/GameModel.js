@@ -18,7 +18,8 @@ const gameSchema = new mongoose.Schema({
   isComplete: {
     type: Boolean,
     required: true,
-  }
+  },
+  pipeHoles: [Number],
 });
 
 module.exports = mongoose.model('Game', gameSchema);

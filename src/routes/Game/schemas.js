@@ -30,6 +30,13 @@ const gameSchemaAfterSave = {
     type: 'string',
     description: 'ID of the game'
   },
+  pipeHoles: {
+    type: 'array',
+    items: {
+      type: 'number',
+    },
+    description: 'Location of where the holes in the pipes will be',
+  },
   __v: {
     type: 'number'
   }

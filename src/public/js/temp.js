@@ -13,10 +13,9 @@ let mainState = {
     socketIO.on('clientGameStart', boundStartGame);
     socketIO.on('clientGameJoin', (e) => {
       if(e.percentToFull >= 1){
+        birds[e.socket] = game.add.sprite(100, 245, 'bird');
         boundStartGame();
       }
-      if(e.socket === socketIO.id){ return; };
-      birds[e.socket] = game.add.sprite(100, 245, 'bird');
     });
 
     this.jumpSound = game.add.audio('jump');
@@ -84,13 +83,13 @@ let mainState = {
     this.labelScore.text = this.score;
   },
   hitPipe: function() {
-    if (birds[socketIO.id].alive == false)
-      return;
-    birds[socketIO.id].alive = false;
-    game.time.events.remove(this.timer);
-    this.pipes.forEach(function(p){
-      p.body.velocity.x = 0;
-    }, this);
+    // if (birds[socketIO.id].alive == false)
+    //   return;
+    // birds[socketIO.id].alive = false;
+    // game.time.events.remove(this.timer);
+    // // this.pipes.forEach(function(p){
+    // //   p.body.velocity.x = 0;
+    // // }, this);
   },
 };
 
@@ -107,7 +106,7 @@ socketIO.on('connect', (physicalSocketConnection) => {
 
 $.urlParam = function (name) {
   const results = new RegExp('[\?&]' + name + '=([^&#]*)')
-      .exec(window.location.search);
+    .exec(window.location.search);
 
   return (results !== null) ? results[1] || 0 : false;
 };

@@ -3,16 +3,22 @@ const gameID = location.pathname.split('/')[1];
 const gameWidth = 1000;
 const gameHeight = 1000;
 const gameInstance = new Phaser.Game(gameWidth, gameHeight, Phaser.CANVAS);
+let pipeHoles;
 let birds = {};
 
 socket.on('connect', (e) => {
   //join the socket lobby
   socket.emit('join', {game: gameID});
 
-  //emit to other clients that you are joining the game
-  socket.emit('clientGameJoin', {gameID});
-  gameInstance.state.add('main', gameState);
-  gameInstance.state.start('main');
+  //pull predetermined pipe opening locations down for consistency across clients
+  $.get(`/api/game/${gameID}`, (data) => {
+    pipeHoles = data[0].pipeHoles;
+
+    //emit to other clients that you are joining the game
+    socket.emit('clientGameJoin', {gameID});
+    gameInstance.state.add('main', gameState);
+    gameInstance.state.start('main');
+  });
 });
 
 const gameState = {
@@ -62,6 +68,12 @@ const gameState = {
         birds[bird].angle += 1;
     }
   },
+  addRowOfPipes: function() {
+
+  },
+  addOnePipe: function(x, y) {
+
+  },
   jump: function (socketID) {
     const actualPlayer = typeof socketID === 'string' ? socketID : socket.id;
     this.jumpSound.play();
@@ -78,5 +90,6 @@ function startGame(){
     birds[bird].body.gravity.y = 1000;
   }
 
+  this.timer = game.time.events.loop(2000, this.addRowOfPipes(), this);
   gameInstance.input.onDown.add(this.jump, this);
 };

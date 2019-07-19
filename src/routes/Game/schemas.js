@@ -166,6 +166,10 @@ exports.getWithFilter = {
       description: 'The number of records to return',
       default: 100,
     },
+    id: {
+      type: 'string',
+      description: 'ID of the game to search for',
+    },
   },
   exposeRoute: true,
   response: {

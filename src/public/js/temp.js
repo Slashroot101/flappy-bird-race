@@ -65,13 +65,13 @@ let mainState = {
     game.state.start('main');
   },
   addOnePipe: function(x, y){
-    // const pipe = game.add.sprite(x,y, 'pipe');
-    // pipe.scale.setTo(window.devicePixelRatio, window.devicePixelRatio );
-    // this.pipes.add(pipe);
-    // game.physics.arcade.enable(pipe);
-    // pipe.body.velocity.x = -200;
-    // pipe.checkWorldBounds = true;
-    // pipe.outOfBoundsKill = true;
+    const pipe = game.add.sprite(x,y, 'pipe');
+    pipe.scale.setTo(window.devicePixelRatio, window.devicePixelRatio );
+    this.pipes.add(pipe);
+    game.physics.arcade.enable(pipe);
+    pipe.body.velocity.x = -200;
+    pipe.checkWorldBounds = true;
+    pipe.outOfBoundsKill = true;
   },
   addRowOfPipes: function() {
     let hole = Math.floor(Math.random() * 15 + 1);

@@ -5,7 +5,7 @@ exports.createGame = async (req, reply) => {
   try {
     req.body.createdOn = new Date();
     req.body.pipeHoles = [];
-    for(let i = 0; i < 150; i = i++){
+    for(let i = 0; i < 150; i++){
       req.body.pipeHoles.push(Math.floor(Math.random() * 8) + 1);
     }
     const game = await new GameModel(req.body).save();
@@ -43,6 +43,10 @@ exports.updateGame = async (req, reply) => {
 exports.getWithFilter = async (req, reply) => {
   try {
     let query = {};
+
+    if(req.query.id){
+      query._id = { _id: req.query.id};
+    }
 
     if(req.query.createdOnStart){
       query.$gte = { createdOnStart: req.query.createdOnStart};

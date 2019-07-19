@@ -6,7 +6,7 @@ const swagger = require('../swagger');
 const mongoose = require('mongoose');
 const GameModel = require('./routes/Game/GameModel');
 const config = require('../config');
-const MAX_NUM_PLAYERS = 2;
+const MAX_NUM_PLAYERS = 1;
 const start = async () => {
   try {
     fastify.register(require('fastify-swagger'), swagger.options);

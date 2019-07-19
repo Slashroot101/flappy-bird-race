@@ -11,9 +11,9 @@ socket.on('connect', (e) => {
   socket.emit('join', {game: gameID});
 
   //pull predetermined pipe opening locations down for consistency across clients
-  $.get(`/api/game/${gameID}`, (data) => {
-    pipeHoles = data[0].pipeHoles;
-
+  $.get(`/api/game?id=${gameID}`, (data) => {
+    pipeHoles = data.games[0].pipeHoles;
+    console.log(data)
     //emit to other clients that you are joining the game
     socket.emit('clientGameJoin', {gameID});
     gameInstance.state.add('main', gameState);
@@ -69,10 +69,21 @@ const gameState = {
     }
   },
   addRowOfPipes: function() {
-
+    const hole = pipeHoles[this.score % 150];
+    for (let i = 0; i < 16; i++) {
+      if (i !== hole && i !== hole + 1)
+        this.addOnePipe(400, i * 60 + 10);
+    }
+    this.score += 1;
+    this.labelScore.text = this.score;
   },
   addOnePipe: function(x, y) {
-
+    const pipe = gameInstance.add.sprite(x,y, 'pipe');
+    this.pipes.add(pipe);
+    gameInstance.physics.arcade.enable(pipe);
+    pipe.body.velocity.x = -200;
+    pipe.checkWorldBounds = true;
+    pipe.outOfBoundsKill = true;
   },
   jump: function (socketID) {
     const actualPlayer = typeof socketID === 'string' ? socketID : socket.id;
@@ -90,6 +101,6 @@ function startGame(){
     birds[bird].body.gravity.y = 1000;
   }
 
-  this.timer = game.time.events.loop(2000, this.addRowOfPipes(), this);
+  this.timer = gameInstance.time.events.loop(2000, this.addRowOfPipes, this);
   gameInstance.input.onDown.add(this.jump, this);
 };

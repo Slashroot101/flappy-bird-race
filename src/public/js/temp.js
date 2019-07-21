@@ -52,7 +52,6 @@ let mainState = {
     animation.to({angle: -20}, 100);
     animation.start();
     socketIO.on('jump', (e) => {
-      console.log(e)
       this.jumpSound.play();
       birds[e.player].body.velocity.y = -400;
       console.log(birds[e.player])

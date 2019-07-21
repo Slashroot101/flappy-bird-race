@@ -6,7 +6,7 @@ const swagger = require('../swagger');
 const mongoose = require('mongoose');
 const GameModel = require('./routes/Game/GameModel');
 const config = require('../config');
-const MAX_NUM_PLAYERS = 1;
+const MAX_NUM_PLAYERS = 2;
 const start = async () => {
   try {
     fastify.register(require('fastify-swagger'), swagger.options);
@@ -58,7 +58,7 @@ const start = async () => {
           }
         }, {new: true}).exec();
         fastify.io.in(game._id).emit('clientGameJoin', {game: game._id, socket: socket.id, percentToFull: game.players.length / MAX_NUM_PLAYERS});
-        if(game.players.length >= MAX_NUM_PLAYERS){
+        if(game.players.length === MAX_NUM_PLAYERS){
           fastify.io.in(game._id).emit('clientGameStart');
         }
       });

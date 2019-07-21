@@ -13,7 +13,7 @@ socket.on('connect', (e) => {
   //pull predetermined pipe opening locations down for consistency across clients
   $.get(`/api/game?id=${gameID}`, (data) => {
     pipeHoles = data.games[0].pipeHoles;
-    console.log(data)
+    players = data.games[0].players;
     //emit to other clients that you are joining the game
     socket.emit('clientGameJoin', {gameID});
     gameInstance.state.add('main', gameState);
@@ -41,7 +41,9 @@ const gameState = {
     this.labelScore = gameInstance.add.text(20, 20, "0",
       { font: "30px Arial", fill: "#ffffff" });
     birds[socket.id] = gameInstance.add.sprite(100, 245, 'bird');
-
+    players.forEach((bird) => {
+      birds[bird.socketClientID] = gameInstance.add.sprite(100, 245, 'bird');
+    });
     socket.on('clientGameJoin', (e) => {
       if(e.socket === socket.id){ return; };
       birds[e.socket] = gameInstance.add.sprite(100, 245, 'bird');
@@ -51,13 +53,8 @@ const gameState = {
     });
 
     socket.on('jump', (e) => {
-      if(e.socket === socket.id){ return; };
-
-      socket.emit('jump', {
-        player: socket.id,
-        gameID,
-      });
-      this.jump(socket.id);
+      if(e.player === socket.id){ return; };
+      this.jump(e.player);
     });
 
     socket.on('clientGameStart', boundStartGame);
@@ -92,6 +89,14 @@ const gameState = {
     const animation = gameInstance.add.tween(birds[actualPlayer]);
     animation.to({angle: -20}, 100);
     animation.start();
+
+    //if it is me jumping, tell the other clients
+    if(typeof socketID !== 'string' || socketID === socket.id){
+      socket.emit('jump', {
+        player: socket.id,
+        gameID,
+      });
+    }
   }
 };
 

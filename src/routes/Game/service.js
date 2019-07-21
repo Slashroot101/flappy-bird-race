@@ -1,6 +1,6 @@
 const GameModel = require('./GameModel');
 const { boomify } = require('boom');
-
+const config = require('../../../config');
 exports.createGame = async (req, reply) => {
   try {
     req.body.createdOn = new Date();
@@ -28,6 +28,14 @@ exports.updateGame = async (req, reply) => {
     }
 
     const game = await GameModel
+      .findOne({query})
+      .exec();
+
+    if(game.players >= config.numPlayersToStart){
+      return {game: []};
+    }
+
+    const updatedGame = await GameModel
       .findByIdAndUpdate(
         req.params.id,
         query,

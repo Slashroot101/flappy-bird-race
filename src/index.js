@@ -48,7 +48,15 @@ const start = async () => {
         fastify.io.in(e.gameID).emit('jump', {player: socket.id});
       });
 
+      socket.on('playerDead', (e) => {
+        fastify.io.in(e.gameID).emit('playerDead', {player: e.player});
+      });
+
       socket.on('clientGameJoin', async (e) => {
+        const games = await GameModel.findById(e.gameID).exec();
+        if(games && games.players.length >= config.numPlayersToStart){
+          return socket.emit('clientGameLeave');
+        }
         const game = await GameModel.findByIdAndUpdate(e.gameID, {
           $push: {
             players: {

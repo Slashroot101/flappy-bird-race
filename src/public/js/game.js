@@ -12,6 +12,7 @@ socket.on('connect', (e) => {
 
   //pull predetermined pipe opening locations down for consistency across clients
   $.get(`/api/game?id=${gameID}`, (data) => {
+    if(data.games.length)
     pipeHoles = data.games[0].pipeHoles;
     players = data.games[0].players;
     //emit to other clients that you are joining the game
@@ -52,6 +53,21 @@ const gameState = {
       }
     });
 
+    socket.on('clientGameLeave', (e) => {
+      window.location.href = '/';
+    });
+
+    socket.on('playerDead', (e) => {
+      if(e.player === socket.id){
+        return;
+      }
+
+      delete birds[e.player];
+      if(Object.keys(birds).entries().length === 1){
+        this.showWinner(Object.keys(birds).entries()[0]);
+      }
+    });
+
     socket.on('jump', (e) => {
       if(e.player === socket.id){ return; };
       this.jump(e.player);
@@ -59,11 +75,28 @@ const gameState = {
 
     socket.on('clientGameStart', boundStartGame);
   },
+  showWinner: function(winner){
+    this.winnerText = gameInstance.add.text( window.innerWidth * window.devicePixelRatio / 2, window.innerHeight * window.devicePixelRatio / 1, "0",
+      { font: "50px Arial", fill: "#ffffff" });
+    this.winnerText.text = `winner`;
+    setTimeout(() => {
+      window.location.href = '/';
+    }, 5000);
+  },
   update: function(){
     for(let bird in birds){
       if (birds[bird].angle < 20)
         birds[bird].angle += 1;
     }
+
+    if (birds[socket.id].y < 0 || birds[socket.id].y > 1000)
+      this.endGame();
+
+    gameInstance.physics.arcade.overlap(
+      birds[bird], this.pipes, this.hitPipe, null, this);
+  },
+  showWinner: function(){
+
   },
   addRowOfPipes: function() {
     const hole = pipeHoles[this.score % 150];
@@ -98,7 +131,21 @@ const gameState = {
         gameID,
       });
     }
-  }
+  },
+  hitPipe: function() {
+    if(birds[socket.id].alive == false)
+      return;
+    socket.emit('playerDead', {player: socket.id, gameID});
+    this.endGame();
+  },
+  endGame: function() {
+    gameInstance.input.onDown.removeAll();
+    birds[socket.id].alive = false;
+    game.time.events.remove(this.timer);
+    this.pipes.forEach(function(p){
+      p.body.velocity.x = 0;
+    });
+  },
 };
 
 function startGame(){

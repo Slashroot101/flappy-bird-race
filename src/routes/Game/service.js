@@ -42,7 +42,7 @@ exports.updateGame = async (req, reply) => {
         { new:true },
       ).exec();
 
-    return {game};
+    return {game: updatedGame};
   } catch (err) {
     throw boomify(err);
   }

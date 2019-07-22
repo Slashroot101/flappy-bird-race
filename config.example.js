@@ -1,4 +1,4 @@
 module.exports = {
   mongoConnectionString: '',
-  numPlayersToStart: 5,
+  numPlayersToStart: 2,
 };

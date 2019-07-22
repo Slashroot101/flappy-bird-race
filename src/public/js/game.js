@@ -2,7 +2,7 @@ const socket = io();
 const gameID = location.pathname.split('/')[1];
 const gameWidth = 1000;
 const gameHeight = 1000;
-const gameInstance = new Phaser.Game(gameWidth, gameHeight, Phaser.CANVAS);
+const gameInstance = new Phaser.Game(window.innerWidth * window.devicePixelRatio / 4, window.innerHeight * window.devicePixelRatio / 2, Phaser.CANVAS);
 let pipeHoles;
 let birds = {};
 
@@ -76,6 +76,7 @@ const gameState = {
   },
   addOnePipe: function(x, y) {
     const pipe = gameInstance.add.sprite(x,y, 'pipe');
+    pipe.scale.setTo(window.devicePixelRatio / 3, window.devicePixelRatio / 3);
     this.pipes.add(pipe);
     gameInstance.physics.arcade.enable(pipe);
     pipe.body.velocity.x = -200;

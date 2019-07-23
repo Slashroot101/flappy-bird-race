@@ -78,7 +78,7 @@ const gameState = {
   showWinner: function(winner){
     this.winnerText = gameInstance.add.text( window.innerWidth * window.devicePixelRatio / 2, window.innerHeight * window.devicePixelRatio / 1, "0",
       { font: "50px Arial", fill: "#ffffff" });
-    this.winnerText.text = `winner`;
+    this.winnerText.text = `${players.filter(e => e.socketClientID === winner)[0].name} wins!`;
     setTimeout(() => {
       window.location.href = '/';
     }, 5000);
@@ -94,9 +94,6 @@ const gameState = {
 
     gameInstance.physics.arcade.overlap(
       birds[bird], this.pipes, this.hitPipe, null, this);
-  },
-  showWinner: function(){
-
   },
   addRowOfPipes: function() {
     const hole = pipeHoles[this.score % 150];

@@ -16,7 +16,7 @@ socket.on('connect', (e) => {
     pipeHoles = data.games[0].pipeHoles;
     players = data.games[0].players;
     //emit to other clients that you are joining the game
-    socket.emit('clientGameJoin', {gameID});
+    socket.emit('clientGameJoin', {gameID, name: $.urlParam('name')});
     gameInstance.state.add('main', gameState);
     gameInstance.state.start('main');
   });
@@ -157,3 +157,10 @@ function startGame(){
   this.timer = gameInstance.time.events.loop(2000, this.addRowOfPipes, this);
   gameInstance.input.onDown.add(this.jump, this);
 };
+
+$.urlParam = function (name) {
+  var results = new RegExp('[\?&]' + name + '=([^&#]*)')
+    .exec(window.location.search);
+
+  return (results !== null) ? results[1] || 0 : false;
+}

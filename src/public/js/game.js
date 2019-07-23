@@ -5,16 +5,19 @@ const gameHeight = 1000;
 const gameInstance = new Phaser.Game(window.innerWidth * window.devicePixelRatio / 4, window.innerHeight * window.devicePixelRatio / 2, Phaser.CANVAS);
 let pipeHoles;
 let birds = {};
+let players;
 
 socket.on('connect', (e) => {
   //join the socket lobby
   socket.emit('join', {game: gameID});
 
+
   //pull predetermined pipe opening locations down for consistency across clients
   $.get(`/api/game?id=${gameID}`, (data) => {
-    if(data.games.length)
+    if(data.games.length === 0){ window.location.href = '/'}
     pipeHoles = data.games[0].pipeHoles;
     players = data.games[0].players;
+
     //emit to other clients that you are joining the game
     socket.emit('clientGameJoin', {gameID, name: $.urlParam('name')});
     gameInstance.state.add('main', gameState);
@@ -45,6 +48,12 @@ const gameState = {
     players.forEach((bird) => {
       birds[bird.socketClientID] = gameInstance.add.sprite(100, 245, 'bird');
     });
+    //throw myself into array for later purposes
+    players.push({
+      name: $.urlParam('name'),
+      socketClientID: socket.id,
+    });
+    console.log(players)
     socket.on('clientGameJoin', (e) => {
       if(e.socket === socket.id){ return; };
       birds[e.socket] = gameInstance.add.sprite(100, 245, 'bird');
@@ -63,8 +72,8 @@ const gameState = {
       }
 
       delete birds[e.player];
-      if(Object.keys(birds).entries().length === 1){
-        this.showWinner(Object.keys(birds).entries()[0]);
+      if(Object.keys(birds).length < 2){
+        this.showWinner(Object.keys(birds)[0]);
       }
     });
 
@@ -76,7 +85,8 @@ const gameState = {
     socket.on('clientGameStart', boundStartGame);
   },
   showWinner: function(winner){
-    this.winnerText = gameInstance.add.text( window.innerWidth * window.devicePixelRatio / 2, window.innerHeight * window.devicePixelRatio / 1, "0",
+    console.log(winner, players.filter(e => e.socketClientID === winner))
+    this.winnerText = gameInstance.add.text( 100, 100, "0",
       { font: "50px Arial", fill: "#ffffff" });
     this.winnerText.text = `${players.filter(e => e.socketClientID === winner)[0].name} wins!`;
     setTimeout(() => {
@@ -89,11 +99,15 @@ const gameState = {
         birds[bird].angle += 1;
     }
 
+    if(birds[socket.id] === undefined){
+      return;
+    }
+
     if (birds[socket.id].y < 0 || birds[socket.id].y > 1000)
       this.endGame();
 
     gameInstance.physics.arcade.overlap(
-      birds[bird], this.pipes, this.hitPipe, null, this);
+      birds[socket.id], this.pipes, this.hitPipe, null, this);
   },
   addRowOfPipes: function() {
     const hole = pipeHoles[this.score % 150];
@@ -130,15 +144,18 @@ const gameState = {
     }
   },
   hitPipe: function() {
-    if(birds[socket.id].alive == false)
+    if(birds[socket.id] === undefined || birds[socket.id].alive == false)
       return;
+    if(Object.keys(birds).length < 2){
+      this.showWinner(Object.keys(birds)[0]);
+    }
     socket.emit('playerDead', {player: socket.id, gameID});
+    delete birds[socket.id];
     this.endGame();
   },
   endGame: function() {
     gameInstance.input.onDown.removeAll();
-    birds[socket.id].alive = false;
-    game.time.events.remove(this.timer);
+    gameInstance.time.events.remove(this.timer);
     this.pipes.forEach(function(p){
       p.body.velocity.x = 0;
     });

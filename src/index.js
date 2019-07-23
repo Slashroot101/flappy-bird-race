@@ -36,12 +36,20 @@ const start = async () => {
       reply.sendFile('index.html');
     });
 
-    await fastify.listen(3000, '192.168.1.242');
+    await fastify.listen(3000);
     fastify.swagger();
     fastify.log.info(`Server is listening on ${fastify.server.address().port}`);
     fastify.io.on('connection', (socket) => {
       socket.on('join', e => {
         socket.join(e.game);
+      });
+
+      socket.on('gameCreate', e => {
+        fastify.io.in('lobby').emit('gameCreate', {game: e.game},)
+      });
+
+      socket.on('joinLobby', e => {
+        socket.join('lobby');
       });
 
       socket.on('jump', (e)=>{
@@ -67,6 +75,7 @@ const start = async () => {
         }, {new: true}).exec();
         fastify.io.in(game._id).emit('clientGameJoin', {game: game._id, socket: socket.id, percentToFull: game.players.length / config.numPlayersToStart });
         if(game.players.length === config.numPlayersToStart){
+          fastify.io.in('lobby').emit('gameFull', {game: game._id});
           fastify.io.in(game._id).emit('clientGameStart');
         }
       });

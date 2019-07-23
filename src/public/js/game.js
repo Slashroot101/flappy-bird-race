@@ -53,7 +53,7 @@ const gameState = {
       name: $.urlParam('name'),
       socketClientID: socket.id,
     });
-    console.log(players)
+
     socket.on('clientGameJoin', (e) => {
       if(e.socket === socket.id){ return; };
       birds[e.socket] = gameInstance.add.sprite(100, 245, 'bird');
@@ -85,13 +85,19 @@ const gameState = {
     socket.on('clientGameStart', boundStartGame);
   },
   showWinner: function(winner){
-    console.log(winner, players.filter(e => e.socketClientID === winner))
-    this.winnerText = gameInstance.add.text( 100, 100, "0",
-      { font: "50px Arial", fill: "#ffffff" });
-    this.winnerText.text = `${players.filter(e => e.socketClientID === winner)[0].name} wins!`;
-    setTimeout(() => {
-      window.location.href = '/';
-    }, 5000);
+      $.put({
+        url: `/api/game/${gameID}`,
+        contentType: 'application/json',
+        data: JSON.stringify({isComplete: true}),
+        success: (e) => {
+          this.winnerText = gameInstance.add.text( 100, 100, "0",
+              { font: "50px Arial", fill: "#ffffff" });
+          this.winnerText.text = `${players.filter(e => e.socketClientID === winner)[0].name} wins!`;
+          setTimeout(() => {
+            window.location.href = '/';
+          }, 5000);
+        }
+      });
   },
   update: function(){
     for(let bird in birds){

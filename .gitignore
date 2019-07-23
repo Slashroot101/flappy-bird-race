@@ -90,3 +90,5 @@ typings/
 .dynamodb/
 config.js
 config.js
+
+.idea

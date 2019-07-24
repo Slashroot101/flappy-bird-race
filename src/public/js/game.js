@@ -85,7 +85,7 @@ const gameState = {
     socket.on('clientGameStart', boundStartGame);
   },
   showWinner: function(winner){
-      $.put({
+      $.ajax({
         url: `/api/game/${gameID}`,
         contentType: 'application/json',
         data: JSON.stringify({isComplete: true}),

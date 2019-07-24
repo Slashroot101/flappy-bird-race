@@ -109,8 +109,10 @@ const gameState = {
       return;
     }
 
-    if (birds[socket.id].y < 0 || birds[socket.id].y > 1000)
+    if (birds[socket.id].y < 0 || birds[socket.id].y > 1000) {
       this.endGame();
+      this.hitPipe();
+    }
 
     gameInstance.physics.arcade.overlap(
       birds[socket.id], this.pipes, this.hitPipe, null, this);

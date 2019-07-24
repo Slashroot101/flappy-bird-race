@@ -32,15 +32,16 @@ $(document).ready((e) => {
         `);
       });
       table = $(`#lobbies`).DataTable();
-      $('#lobbies button').on('click', (e) => {
-        const playerName = prompt('What would you like your game name to be?');
-        const gameID = $(e.target).parent().parent().attr('id');
-        if(gameID){
-          location.href = `${location.protocol}//${location.hostname}:${location.port}/${gameID}/game?name=${encodeURI(playerName)}`;
-        }
+      $(`.paginate_button`).on('click', () => {
+        $('#lobbies button').on('click', (e) => {
+          const playerName = prompt('What would you like your game name to be?');
+          const gameID = $(e.target).parent().parent().attr('id');
+          if(gameID){
+            location.href = `${location.protocol}//${location.hostname}:${location.port}/${gameID}/game?name=${encodeURI(playerName)}`;
+          }
+        });
       });
-
-
+      
       $(`#createGame`).on('click', (e) => {
         $.get('/api/game?isComplete=false', (games) => {
           console.log(games)

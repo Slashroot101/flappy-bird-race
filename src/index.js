@@ -36,7 +36,7 @@ const start = async () => {
       reply.sendFile('index.html');
     });
 
-    await fastify.listen(3000, '13.68.183.100');
+    await fastify.listen(3000);
     fastify.swagger();
     fastify.log.info(`Server is listening on ${fastify.server.address().port}`);
     fastify.io.on('connection', (socket) => {

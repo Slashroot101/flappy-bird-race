@@ -126,7 +126,7 @@ const gameState = {
   },
   addOnePipe: function(x, y) {
     const pipe = gameInstance.add.sprite(x,y, 'pipe');
-    pipe.scale.setTo(window.devicePixelRatio / 3, window.devicePixelRatio / 3);
+    pipe.scale.setTo(window.devicePixelRatio , window.devicePixelRatio);
     this.pipes.add(pipe);
     gameInstance.physics.arcade.enable(pipe);
     pipe.body.velocity.x = -200;

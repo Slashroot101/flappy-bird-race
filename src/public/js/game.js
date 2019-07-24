@@ -152,6 +152,7 @@ const gameState = {
     }
   },
   hitPipe: function() {
+    this.endGame();
     if(birds[socket.id] === undefined || birds[socket.id].alive == false)
       return;
     if(Object.keys(birds).length < 2){
@@ -159,7 +160,7 @@ const gameState = {
     }
     socket.emit('playerDead', {player: socket.id, gameID});
     delete birds[socket.id];
-    this.endGame();
+
   },
   endGame: function() {
     gameInstance.input.onDown.removeAll();

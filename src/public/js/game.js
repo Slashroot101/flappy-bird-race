@@ -110,7 +110,6 @@ const gameState = {
     }
 
     if (birds[socket.id].y < 0 || birds[socket.id].y > 1000) {
-      this.endGame();
       this.hitPipe();
     }
 
@@ -164,7 +163,7 @@ const gameState = {
   },
   endGame: function() {
     gameInstance.input.onDown.removeAll();
-    gameInstance.time.events.remove(this.timer);
+    gameInstance.time.events.removeAll();
     this.pipes.forEach(function(p){
       p.body.velocity.x = 0;
     });

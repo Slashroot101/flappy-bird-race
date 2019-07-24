@@ -1,12 +1,14 @@
 $(document).ready((e) => {
   const socket = io();
-
+  const createdGames = [];
   socket.on('connect', () => {
     //join the socket lobby
     socket.emit('joinLobby');
 
+    let table;
     socket.on('gameCreate', (e) => {
-      table.row.add([e.game.id, e.game.players, e.game.createdOn, '<td><button type="button" class="btn btn-primary">Join</button></td>']).draw(false)
+      if(createdGames.includes(e.game.id)){return;}
+      table.row.add([e.game.id, e.game.players, e.game.createdOn, '<button type="button" class="btn btn-primary">Join</button>']).draw(false)
     });
 
     socket.on('gameFull', (e) => {
@@ -19,15 +21,17 @@ $(document).ready((e) => {
         if(ele.players.length > 5){
           return;
         }
+
         $(`#lobbies tbody`).append(`
-        <tr id="${ele._id}">
-            <td>${ele._id}</td>
-            <td>${ele.players.length}</td>
-            <td>${ele.createdOn}</td>
-            <td><button type="button" class="btn btn-primary">Join</button></td>
-        </tr>
-      `);
+          <tr id="${ele._id}">
+              <td>${ele._id}</td>
+              <td>${ele.players.length}</td>
+              <td>${ele.createdOn}</td>
+              <td><button class="btn btn-primary">Join</button></td>
+          </tr>
+        `);
       });
+      table = $(`#lobbies`).DataTable();
       $('#lobbies button').on('click', (e) => {
         const playerName = prompt('What would you like your game name to be?');
         const gameID = $(e.target).parent().parent().attr('id');
@@ -36,7 +40,7 @@ $(document).ready((e) => {
         }
       });
 
-      const table = $('#lobbies').DataTable();
+
       $(`#createGame`).on('click', (e) => {
         $.get('/api/game?isComplete=false', (games) => {
           console.log(games)
@@ -53,7 +57,8 @@ $(document).ready((e) => {
               players: [],
             }),
             success: (e) => {
-                table.row.add([e.game._id, e.game.players.length, e.game.createdOn, '<td><button type="button" class="btn btn-primary">Join</button></td>']).draw(false);
+              table.row.add([e.game._id, e.game.players.length, e.game.createdOn, '<button class="btn btn-primary">Join</button>']).draw(false);
+                createdGames.push(e.game._id);
                 socket.emit('gameCreate', {
                   game: {
                     id: e.game._id,

@@ -10,7 +10,7 @@ let players;
 socket.on('connect', (e) => {
   //join the socket lobby
   socket.emit('join', {game: gameID});
-
+  $(`canvas`).focus();
 
   //pull predetermined pipe opening locations down for consistency across clients
   $.get(`/api/game?id=${gameID}`, (data) => {

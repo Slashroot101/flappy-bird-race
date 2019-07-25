@@ -86,6 +86,7 @@ const gameState = {
   },
   showWinner: function(winner){
       $.ajax({
+        method: 'PUT',
         url: `/api/game/${gameID}`,
         contentType: 'application/json',
         data: JSON.stringify({isComplete: true}),

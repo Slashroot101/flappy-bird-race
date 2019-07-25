@@ -92,8 +92,7 @@ const gameState = {
         success: (e) => {
           this.winnerText = gameInstance.add.text( 100, 100, "0",
               { font: "50px Arial", fill: "#ffffff" });
-          console.log(players.filter(e => e.socketClientID === winner), players, winner)
-          this.winnerText.text = `${players.filter(e => e.socketClientID === winner)[0].name} wins!`;
+          this.winnerText.text = `${winner === socket.id ? 'Winner!' : 'Game Over...'}`;
           setTimeout(() => {
             window.location.href = '/';
           }, 5000);

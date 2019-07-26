@@ -73,7 +73,7 @@ const start = async () => {
             }
           }
         }, {new: true}).exec();
-        fastify.io.in(game._id).emit('clientGameJoin', {game: game._id, socket: socket.id, percentToFull: game.players.length / config.numPlayersToStart });
+        fastify.io.in(game._id).emit('clientGameJoin', {game: game._id, socket: socket.id, percentToFull: game.players.length / config.numPlayersToStart, numCurrentPlayers: game.players.length });
         if(game.players.length === config.numPlayersToStart){
           fastify.io.in('lobby').emit('gameFull', {game: game._id});
           fastify.io.in(game._id).emit('clientGameStart');

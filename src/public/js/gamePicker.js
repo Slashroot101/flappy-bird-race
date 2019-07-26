@@ -11,6 +11,10 @@ $(document).ready((e) => {
       table.row.add([e.game.id, e.game.players, e.game.createdOn, '<button type="button" class="btn btn-primary">Join</button>']).draw(false)
     });
 
+    socket.on('clientGameJoin', (e) => {
+      $(`#${e.game} players`).html(e.numCurrentPlayers);
+    });
+
     socket.on('gameFull', (e) => {
       const row = $(`tr #${e.game}`);
       table.row(row).remove().draw();
@@ -25,7 +29,7 @@ $(document).ready((e) => {
         $(`#lobbies tbody`).append(`
           <tr id="${ele._id}">
               <td>${ele._id}</td>
-              <td>${ele.players.length}</td>
+              <td id="players">${ele.players.length}</td>
               <td>${ele.createdOn}</td>
               <td><button class="btn btn-primary">Join</button></td>
           </tr>

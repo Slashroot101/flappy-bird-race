@@ -12,7 +12,7 @@ $(document).ready((e) => {
     });
 
     socket.on('clientGameJoin', (e) => {
-      $(`#${e.game} players`).html(e.numCurrentPlayers);
+      $(`#${e.game} #players`).html(e.numCurrentPlayers);
     });
 
     socket.on('gameFull', (e) => {

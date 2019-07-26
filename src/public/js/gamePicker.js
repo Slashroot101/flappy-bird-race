@@ -12,6 +12,7 @@ $(document).ready((e) => {
     });
 
     socket.on('clientGameJoin', (e) => {
+      console.log(e);
       $(`#${e.game} #players`).html(e.numCurrentPlayers);
     });
 

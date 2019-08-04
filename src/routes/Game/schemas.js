@@ -2,7 +2,6 @@ const gameSchemaBeforeSave = {
   players: {
     type: 'array',
     description: 'Array of players that are currently enrolled in the game',
-    required: true,
     items: {
       type: 'object',
       properties: {
@@ -16,7 +15,6 @@ const gameSchemaBeforeSave = {
     }
   },
   isComplete: {
-    required: true,
     type: 'boolean',
     description: 'Is the game complete',
   }

@@ -44,7 +44,9 @@ $(document).ready((e) => {
         $('#lobbies button').on('click', prompForNameContinueToGame);
       });
 
-      $('input').change(prompForNameContinueToGame);
+      $('input').change((e)=> {
+				$('#lobbies button').on('click', prompForNameContinueToGame);
+			});
 
       $(`#createGame`).on('click', (e) => {
         $.get('/api/game?isComplete=false', (games) => {
@@ -79,16 +81,18 @@ $(document).ready((e) => {
 	});
 	
 	function prompForNameContinueToGame(){
+		console.log(1)
 		let playerName;
 		const localPlayerName = localStorage.getItem('name');
-		if(localPlayerName){
+		if(localPlayerName !== null){
 			playerName = localPlayerName;
 		} else {
 			playerName = prompt('What would you like your game name to be?');
+			localStorage.setItem('name', playerName);
 		}
 
-		localStorage.setItem('name', playerName);
-		const gameID = $(e.target).parent().parent().attr('id');
+		const gameID = $(this).parent().parent().attr('id');
+		console.log(gameID)
 		if(gameID){
 			location.href = `${location.protocol}//${location.hostname}:${location.port}/${gameID}/game?name=${encodeURI(playerName)}`;
 		}

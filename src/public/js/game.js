@@ -89,7 +89,7 @@ const gameState = {
         method: 'PUT',
         url: `/api/game/${gameID}`,
         contentType: 'application/json',
-        data: JSON.stringify({isComplete: true}),
+        data: JSON.stringify({isComplete: true, players:[]}),
         success: (e) => {
           this.winnerText = gameInstance.add.text( 100, 100, "0",
               { font: "50px Arial", fill: "#ffffff" });
@@ -117,7 +117,7 @@ const gameState = {
     gameInstance.physics.arcade.overlap(
       birds[socket.id], this.pipes, this.hitPipe, null, this);
   },
-  addRowOfPipes: function() {
+  addRowOfPipes: function() { 
     const hole = pipeHoles[this.score % 150];
     for (let i = 0; i < 16; i++) {
       if (i !== hole && i !== hole + 1)

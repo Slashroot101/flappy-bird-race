@@ -83,7 +83,6 @@ exports.updateGame = {
   body: {
     players: {
 			type: 'array',
-			optional: true,
       items: {
         type: 'object',
         properties: {

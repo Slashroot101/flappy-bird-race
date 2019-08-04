@@ -19,7 +19,7 @@ exports.updateGame = async (req, reply) => {
   try {
     let query = {};
 
-    if(req.body.players){
+    if(req.body.players.length > 0){
       query.$push = {players: req.body.players};
     }
 
@@ -29,8 +29,8 @@ exports.updateGame = async (req, reply) => {
 
     const game = await GameModel
       .findOne({query})
-      .exec();
-
+			.exec();
+			
     if(game.players >= config.numPlayersToStart){
       return {game: []};
     }

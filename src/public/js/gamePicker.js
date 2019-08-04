@@ -37,32 +37,14 @@ $(document).ready((e) => {
       });
       table = $(`#lobbies`).DataTable();
 
-      $('#lobbies button').on('click', (e) => {
-        const playerName = prompt('What would you like your game name to be?');
-        const gameID = $(e.target).parent().parent().attr('id');
-        if(gameID){
-          location.href = `${location.protocol}//${location.hostname}:${location.port}/${gameID}/game?name=${encodeURI(playerName)}`;
-        }
-      });
+      $('#lobbies button').on('click', prompForNameContinueToGame);
 
 
       $(`.paginate_button`).on('click', () => {
-        $('#lobbies button').on('click', (e) => {
-          const playerName = prompt('What would you like your game name to be?');
-          const gameID = $(e.target).parent().parent().attr('id');
-          if(gameID){
-            location.href = `${location.protocol}//${location.hostname}:${location.port}/${gameID}/game?name=${encodeURI(playerName)}`;
-          }
-        });
+        $('#lobbies button').on('click', prompForNameContinueToGame);
       });
 
-      $('input').change((e) => {
-        const playerName = prompt('What would you like your game name to be?');
-        const gameID = $(e.target).parent().parent().attr('id');
-        if(gameID){
-          location.href = `${location.protocol}//${location.hostname}:${location.port}/${gameID}/game?name=${encodeURI(playerName)}`;
-        }
-      });
+      $('input').change(prompForNameContinueToGame);
 
       $(`#createGame`).on('click', (e) => {
         $.get('/api/game?isComplete=false', (games) => {
@@ -94,6 +76,22 @@ $(document).ready((e) => {
         });
       });
     });
-  });
+	});
+	
+	function prompForNameContinueToGame(){
+		let playerName;
+		const localPlayerName = localStorage.getItem('name');
+		if(localPlayerName){
+			playerName = localPlayerName;
+		} else {
+			playerName = prompt('What would you like your game name to be?');
+		}
+
+		localStorage.setItem('name', playerName);
+		const gameID = $(e.target).parent().parent().attr('id');
+		if(gameID){
+			location.href = `${location.protocol}//${location.hostname}:${location.port}/${gameID}/game?name=${encodeURI(playerName)}`;
+		}
+	}
 
 });

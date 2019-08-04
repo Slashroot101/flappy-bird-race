@@ -31,7 +31,7 @@ exports.updateGame = async (req, reply) => {
       .findOne({query})
 			.exec();
 			
-    if(game.players >= config.numPlayersToStart){
+    if(!req.body.isComplete && game.players >= config.numPlayersToStart){
       return {game: []};
     }
 

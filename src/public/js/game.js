@@ -120,7 +120,7 @@ const gameState = {
   addRowOfPipes: function() { 
     const hole = pipeHoles[this.score % 150];
     for (let i = 0; i < 16; i++) {
-      if (i !== hole && i !== hole + 1 && i !== hole + 2)
+      if (i >= hole  && i <= i + 4)
         this.addOnePipe(400, i * 60 + 10);
     }
     this.score += 1;
